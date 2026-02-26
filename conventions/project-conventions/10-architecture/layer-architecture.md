@@ -1,6 +1,6 @@
-# Layer Architecture
+# 계층 아키텍처
 
-## 4-Layer Structure
+## 4계층 구조
 
 ```
 Presentation (Controller)
@@ -9,20 +9,20 @@ Presentation (Controller)
       ← Infrastructure (Persistence / Client / Event Listener)
 ```
 
-Upper layers depend on lower layers only. Infrastructure depends on Domain. Reverse dependencies prohibited.
+상위 계층만 하위 계층에 의존한다. 인프라 계층은 도메인 계층에 의존한다. 역방향 의존은 금지한다.
 
 ---
 
-## Layer 1: Presentation (HTTP Entry Point)
+## 계층 1: 표현 계층 (HTTP 진입점)
 
 ### Controller
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `presentation/external/{Feature}ExternalController.kt` or `presentation/internal/admin/{Feature}AdminController.kt` |
-| Dependency Injection | **UseCase only** (no Service/Repository/Infrastructure) |
-| Return Type | `ResponseEntity<ApiResource<T>>` |
-| Responsibility | Converts Request to Command, calls UseCase, wraps Result into Response |
+| 위치 | `presentation/external/{Feature}ExternalController.kt` 또는 `presentation/internal/admin/{Feature}AdminController.kt` |
+| 의존성 주입 | **UseCase만** (Service/Repository/Infrastructure 금지) |
+| 반환 타입 | `ResponseEntity<ApiResource<T>>` |
+| 책임 | Request를 Command로 변환하고, UseCase를 호출하고, Result를 Response로 감싼다 |
 
 ```kotlin
 @RestController
@@ -41,31 +41,31 @@ class HolidayExternalController(
 }
 ```
 
-**DTO Locations:**
+**DTO 위치:**
 
-| DTO Type | Location | Example |
-|----------|----------|---------|
-| Presentation Request | `presentation/external/request/` | `CreateHolidayRequest` |
-| Presentation Response | `presentation/external/response/` | `HolidayResponse` |
-| Application Command | `application/dto/command/` | `CreateHolidayCommand` |
-| Application Result | `application/dto/result/` | `HolidayResult` |
+| DTO 유형 | 위치 | 예시 |
+|----------|------|------|
+| 표현 계층 요청 | `presentation/external/request/` | `CreateHolidayRequest` |
+| 표현 계층 응답 | `presentation/external/response/` | `HolidayResponse` |
+| 응용 계층 커맨드 | `application/dto/command/` | `CreateHolidayCommand` |
+| 응용 계층 결과 | `application/dto/result/` | `HolidayResult` |
 
 ---
 
-## Layer 2: Application (Orchestration)
+## 계층 2: 응용 계층 (오케스트레이션)
 
-**Package**: `{projectGroup}.{appname}.application`
+**패키지**: `{projectGroup}.{appname}.application`
 
-Orchestrates domain logic through UseCase classes. UseCase owns the transaction boundary. Application Service delegates repository access.
+도메인 로직을 UseCase 클래스로 오케스트레이션한다. UseCase가 트랜잭션 경계를 소유한다. Application Service는 리포지토리 접근을 위임받는다.
 
 ### UseCase
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Annotation | `@Service`, `@Transactional(readOnly = true)` or `@Transactional` |
-| Interface | **None** — concrete class only |
-| Invocation | `operator fun invoke()` as primary entry point |
-| Injection | Application Service, Domain Policy, Domain Service, EventPublisher |
+| 어노테이션 | `@Service`, `@Transactional(readOnly = true)` 또는 `@Transactional` |
+| 인터페이스 | **없음** — 구상 클래스만 사용 |
+| 호출 방식 | `operator fun invoke()`를 주 진입점으로 사용 |
+| 주입 대상 | Application Service, Domain Policy, Domain Service, EventPublisher |
 
 ```kotlin
 @Service
@@ -93,13 +93,13 @@ class CreateHolidayUseCase(
 
 ### Application Service
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Annotation | `@Service` |
-| Transaction | **No** `@Transactional` (propagated from UseCase) |
-| Dependency Injection | Repository, Mapper |
-| Return Type | `{Feature}Result` |
-| Responsibility | Repository access delegation, Domain ↔ JPA Entity mapping via Mapper |
+| 어노테이션 | `@Service` |
+| 트랜잭션 | `@Transactional` **금지** (UseCase에서 전파) |
+| 의존성 주입 | Repository, Mapper |
+| 반환 타입 | `{Feature}Result` |
+| 책임 | 리포지토리 접근 위임, Mapper를 통한 Domain ↔ JPA Entity 변환 |
 
 ```kotlin
 @Service
@@ -128,20 +128,20 @@ class HolidayService(
 
 ---
 
-## Layer 3: Domain (Business Logic)
+## 계층 3: 도메인 계층 (비즈니스 로직)
 
-**Package**: `{projectGroup}.{appname}.domain`
+**패키지**: `{projectGroup}.{appname}.domain`
 
-Pure Kotlin. No Spring, no JPA, no external framework dependencies.
+순수 Kotlin으로 작성한다. Spring, JPA, 외부 프레임워크 의존성을 사용하지 않는다.
 
 ### Domain Model
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `domain/model/{feature}/` |
-| Framework | **None** — pure Kotlin |
-| Mutations | Via business methods only |
-| Factory | `companion object { fun create(...) }` |
+| 위치 | `domain/model/{feature}/` |
+| 프레임워크 | **없음** — 순수 Kotlin |
+| 상태 변경 | 비즈니스 메서드로만 변경 |
+| 팩토리 | `companion object { fun create(...) }` |
 
 ```kotlin
 class Holiday private constructor(
@@ -168,12 +168,12 @@ data class Money(val amount: BigDecimal, val currency: Currency) {
 
 ### Domain Policy
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `domain/policy/` |
-| Annotation | `@Component` |
-| Responsibility | Allow/deny validation rules |
-| Violation | Throw domain exception |
+| 위치 | `domain/policy/` |
+| 어노테이션 | `@Component` |
+| 책임 | 허용/거부 검증 규칙 |
+| 위반 시 | 도메인 예외 발생 |
 
 ```kotlin
 @Component
@@ -202,12 +202,12 @@ class OrderLimitPolicy(private val orderService: OrderService) {
 
 ### Domain Service
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `domain/service/` |
-| Annotation | `@Component` |
-| Responsibility | Value computation, multi-aggregate coordination |
-| Dependency | Domain Model only (no Repository, no Infrastructure) |
+| 위치 | `domain/service/` |
+| 어노테이션 | `@Component` |
+| 책임 | 값 계산, 다중 애그리게이트 조정 |
+| 의존성 | Domain Model만 (Repository, Infrastructure 금지) |
 
 ```kotlin
 @Component
@@ -223,13 +223,13 @@ class DiscountCalculator {
 }
 ```
 
-### Domain Event
+### 도메인 이벤트
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `domain/event/` |
-| Structure | Independent `data class` per event (not sealed) |
-| Data | IDs and minimal context only — never entities or DTOs |
+| 위치 | `domain/event/` |
+| 구조 | 이벤트별 독립 `data class` (sealed class 아님) |
+| 데이터 | ID와 최소한의 컨텍스트만 포함 — 엔티티나 DTO를 넣지 않는다 |
 
 ```kotlin
 data class HolidayCreatedEvent(val holidayId: Long)
@@ -239,20 +239,20 @@ data class OrderCancelledEvent(val orderId: Long, val reason: String)
 
 ---
 
-## Layer 4: Infrastructure (External Integration)
+## 계층 4: 인프라 계층 (외부 통합)
 
-**Package**: `{projectGroup}.{appname}.infrastructure`
+**패키지**: `{projectGroup}.{appname}.infrastructure`
 
-Implements persistence, external API clients, and event listeners. Depends on Domain layer.
+영속성, 외부 API 클라이언트, 이벤트 리스너를 구현한다. 도메인 계층에 의존한다.
 
 ### JPA Entity
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `infrastructure/persistence/entity/` |
-| Naming | `{Feature}JpaEntity` |
-| Framework | JPA annotations, `BaseTimeEntity` |
-| Relationship | Completely separate from Domain Model |
+| 위치 | `infrastructure/persistence/entity/` |
+| 네이밍 | `{Feature}JpaEntity` |
+| 프레임워크 | JPA 어노테이션, `BaseTimeEntity` |
+| 관계 | Domain Model과 완전히 분리 |
 
 ```kotlin
 @Entity
@@ -267,11 +267,11 @@ class HolidayJpaEntity(
 
 ### Mapper
 
-| Item | Rule |
+| 항목 | 규칙 |
 |------|------|
-| Location | `infrastructure/persistence/mapper/` |
-| Annotation | `@Component` |
-| Methods | `toDomain(entity): DomainModel`, `toEntity(domain): JpaEntity` |
+| 위치 | `infrastructure/persistence/mapper/` |
+| 어노테이션 | `@Component` |
+| 메서드 | `toDomain(entity): DomainModel`, `toEntity(domain): JpaEntity` |
 
 ```kotlin
 @Component
@@ -298,7 +298,7 @@ interface HolidayJpaRepository : JpaRepository<HolidayJpaEntity, Long> {
 }
 ```
 
-### QueryRepository — dynamic conditions, pagination, complex joins. **Methods must use `fetch` prefix**.
+### QueryRepository — 동적 조건, 페이징, 복잡한 조인에 사용한다. **메서드는 `fetch` 접두사를 사용한다.**
 
 ```kotlin
 @Repository
@@ -312,7 +312,7 @@ class HolidayQueryRepository : QuerydslRepositorySupport(HolidayJpaEntity::class
 }
 ```
 
-### Event Listener
+### 이벤트 리스너
 
 ```kotlin
 @Component
@@ -331,23 +331,23 @@ class HolidayEventListener(private val slackClient: SlackClient) {
 
 ---
 
-## Domain Model & Infrastructure Entity
+## Domain Model과 인프라 Entity
 
-### Separation Principle
+### 분리 원칙
 
-Domain Model and JPA Entity are **completely separate classes**. Domain Model is a pure Kotlin class with no framework annotations. JPA Entity is an infrastructure concern annotated with JPA/Hibernate.
+Domain Model과 JPA Entity는 **완전히 분리된 클래스**다. Domain Model은 프레임워크 어노테이션이 없는 순수 Kotlin 클래스다. JPA Entity는 JPA/Hibernate 어노테이션을 가진 인프라 관심사다.
 
-| Aspect | Domain Model | JPA Entity |
-|--------|-------------|-----------|
-| Package | `domain/model/{feature}/` | `infrastructure/persistence/entity/` |
-| Annotations | None (pure Kotlin) | `@Entity`, `@Table`, `@Column` |
-| Purpose | Business logic, invariants | ORM mapping, persistence |
-| Naming | `{Feature}` (e.g. `Holiday`) | `{Feature}JpaEntity` (e.g. `HolidayJpaEntity`) |
-| Mutability | Immutable or controlled via business methods | Mutable for JPA dirty checking |
+| 관점 | Domain Model | JPA Entity |
+|------|-------------|-----------|
+| 패키지 | `domain/model/{feature}/` | `infrastructure/persistence/entity/` |
+| 어노테이션 | 없음 (순수 Kotlin) | `@Entity`, `@Table`, `@Column` |
+| 목적 | 비즈니스 로직, 불변식 | ORM 매핑, 영속성 |
+| 네이밍 | `{Feature}` (예: `Holiday`) | `{Feature}JpaEntity` (예: `HolidayJpaEntity`) |
+| 가변성 | 불변 또는 비즈니스 메서드로 제어 | JPA 더티 체킹을 위해 가변 |
 
-### Mapper Pattern
+### Mapper 패턴
 
-All conversion between Domain Model and JPA Entity happens through `{Feature}Mapper` in `infrastructure/persistence/mapper/`.
+Domain Model과 JPA Entity 간 모든 변환은 `infrastructure/persistence/mapper/`의 `{Feature}Mapper`를 통해 수행한다.
 
 ```kotlin
 @Component
@@ -373,47 +373,47 @@ class OrderMapper {
 
 ---
 
-## DTO Flow
+## DTO 흐름
 
 ```
 [HTTP Request JSON] → CreateHolidayRequest (Presentation) → CreateHolidayCommand (Application)
   → Holiday Domain Model → HolidayResult (Application) → HolidayResponse (Presentation) → [HTTP Response JSON]
 ```
 
-| Step | From | To | Where |
-|------|------|----|-------|
-| HTTP in | JSON body | `{Feature}Request` (Presentation) | Spring deserialization |
-| Presentation → Application | `{Feature}Request` | `{Feature}Command` (Application) | Controller (`request.toCommand()`) |
-| Application → Domain | `{Feature}Command` | `{Feature}` Domain Model | Application Service (`Model.create()`) |
-| Domain → Application | `{Feature}` Domain Model | `{Feature}Result` (Application) | Application Service (`Result.from(model)`) |
-| Application → Presentation | `{Feature}Result` | `{Feature}Response` (Presentation) | Controller (`Response.from(result)`) |
-| HTTP out | `{Feature}Response` | JSON body | `ApiResource.success()` |
+| 단계 | 출발 | 도착 | 위치 |
+|------|------|------|------|
+| HTTP 수신 | JSON body | `{Feature}Request` (표현 계층) | Spring 역직렬화 |
+| 표현 → 응용 | `{Feature}Request` | `{Feature}Command` (응용 계층) | Controller (`request.toCommand()`) |
+| 응용 → 도메인 | `{Feature}Command` | `{Feature}` Domain Model | Application Service (`Model.create()`) |
+| 도메인 → 응용 | `{Feature}` Domain Model | `{Feature}Result` (응용 계층) | Application Service (`Result.from(model)`) |
+| 응용 → 표현 | `{Feature}Result` | `{Feature}Response` (표현 계층) | Controller (`Response.from(result)`) |
+| HTTP 송신 | `{Feature}Response` | JSON body | `ApiResource.success()` |
 
 ---
 
-## Dependency Direction Rule
+## 의존성 방향 규칙
 
-`Controller → UseCase → Application Service → Repository` — each layer injects **only the layer immediately below or the Domain layer**.
+`Controller → UseCase → Application Service → Repository` — 각 계층은 **바로 아래 계층 또는 도메인 계층만** 주입한다.
 
-| Layer | Injects | Prohibited |
-|-------|---------|------------|
-| Controller | UseCase only | Service, Repository, Infrastructure |
-| UseCase | Application Service, Domain Policy, Domain Service, EventPublisher | Repository, other UseCase |
-| Application Service | Repository, Mapper | other Application Service |
-| Domain Policy / Service | (other Domain components OK) | Repository, Infrastructure |
+| 계층 | 주입 대상 | 주입 금지 |
+|------|-----------|-----------|
+| Controller | UseCase만 | Service, Repository, Infrastructure |
+| UseCase | Application Service, Domain Policy, Domain Service, EventPublisher | Repository, 다른 UseCase |
+| Application Service | Repository, Mapper | 다른 Application Service |
+| Domain Policy / Service | (다른 도메인 컴포넌트 허용) | Repository, Infrastructure |
 
-| Layer | Transaction | DataSource |
-|-------|-------------|------------|
-| Controller | None | - |
-| UseCase (read) | `@Transactional(readOnly = true)` | Slave (Reader) |
-| UseCase (write) | `@Transactional` | Master (Writer) |
-| Application Service | None (propagated from UseCase) | - |
+| 계층 | 트랜잭션 | DataSource |
+|------|----------|------------|
+| Controller | 없음 | - |
+| UseCase (읽기) | `@Transactional(readOnly = true)` | Slave (Reader) |
+| UseCase (쓰기) | `@Transactional` | Master (Writer) |
+| Application Service | 없음 (UseCase에서 전파) | - |
 
 ---
 
-## Cross-Domain Orchestration
+## 교차 도메인 오케스트레이션
 
-### Approach 1: UseCase → Multiple Application Services (Single Transaction)
+### 방법 1: UseCase → 여러 Application Service (단일 트랜잭션)
 
 ```kotlin
 @Service
@@ -432,7 +432,7 @@ class CreateBookingUseCase(
 }
 ```
 
-### Approach 2: UseCase → Event → Listener (Eventual Consistency)
+### 방법 2: UseCase → Event → Listener (최종 일관성)
 
 ```kotlin
 @Service
@@ -458,26 +458,26 @@ class OrderCreatedEventListener(private val inventoryService: InventoryService) 
 }
 ```
 
-| Approach | Transaction | Use Case | Risk |
-|----------|-------------|----------|------|
-| UseCase → multiple Services | Single shared transaction | Write operations requiring atomicity | Longer lock hold time |
-| UseCase → Event → Listener | Eventual consistency | Cross-domain side effects | Requires idempotent handlers |
+| 방법 | 트랜잭션 | 사용 시점 | 위험 요소 |
+|------|----------|-----------|-----------|
+| UseCase → 여러 Service | 단일 공유 트랜잭션 | 원자성이 필요한 쓰기 작업 | 긴 락 유지 시간 |
+| UseCase → Event → Listener | 최종 일관성 | 교차 도메인 부수 효과 | 멱등성 핸들러 필요 |
 
 ---
 
-## Anti-Patterns
+## 안티패턴
 
-| # | Anti-Pattern | Problem | Correct Method |
-|---|--------------|---------|----------------|
-| 1 | Controller calls Service directly | Bypasses UseCase orchestration layer | Controller → UseCase → Application Service |
-| 2 | Controller calls Repository directly | Bypasses all business layers | Controller → UseCase → Application Service → Repository |
-| 3 | UseCase calls Repository directly | Bypasses Application Service; mixes orchestration with data access | UseCase → Application Service → Repository |
-| 4 | Application Service returns Response DTO | Creates upward dependency on Presentation | Application Service returns `{Feature}Result` only |
-| 5 | Return JPA Entity as API response | Exposes internal structure; no contract | JpaEntity → Domain Model → Result → Response conversion chain |
-| 6 | Business logic in UseCase | Role confusion; UseCase is orchestration only | Business logic belongs in Domain Policy/Service |
-| 7 | `@Transactional` on Application Service | Duplicate transaction management; conflicts | Manage transactions only at UseCase level |
-| 8 | Domain Model with JPA annotations | Domain polluted with infrastructure concerns | Separate Domain Model (pure Kotlin) and JPA Entity |
-| 9 | UseCase injecting another UseCase | Breaks layer rule; nested transaction risk | Inject Application Services from multiple domains instead |
-| 10 | Controller injecting Service or Repository | Skips UseCase layer | Controller injects UseCase only |
-| 11 | Domain Model importing DTO classes | Reversed dependency | Use `{Feature}Result.from(model)` pattern |
-| 12 | `.toKst()` in Application Service or Domain | Display concern leaks into business layer | KST conversion only in Response DTO |
+| # | 안티패턴 | 문제점 | 올바른 방법 |
+|---|----------|--------|-------------|
+| 1 | Controller에서 Service를 직접 호출 | UseCase 오케스트레이션 계층을 우회 | Controller → UseCase → Application Service |
+| 2 | Controller에서 Repository를 직접 호출 | 모든 비즈니스 계층을 우회 | Controller → UseCase → Application Service → Repository |
+| 3 | UseCase에서 Repository를 직접 호출 | Application Service를 우회하여 오케스트레이션과 데이터 접근이 혼합 | UseCase → Application Service → Repository |
+| 4 | Application Service에서 Response DTO를 반환 | 표현 계층에 대한 상향 의존성 발생 | Application Service는 `{Feature}Result`만 반환 |
+| 5 | JPA Entity를 API 응답으로 반환 | 내부 구조 노출, 계약 없음 | JpaEntity → Domain Model → Result → Response 변환 체인 |
+| 6 | UseCase에 비즈니스 로직 작성 | 역할 혼동, UseCase는 오케스트레이션 전용 | 비즈니스 로직은 Domain Policy/Service에 작성 |
+| 7 | Application Service에 `@Transactional` 선언 | 중복 트랜잭션 관리, 충돌 가능 | UseCase에서만 트랜잭션 관리 |
+| 8 | Domain Model에 JPA 어노테이션 사용 | 도메인이 인프라 관심사에 오염 | Domain Model(순수 Kotlin)과 JPA Entity를 분리 |
+| 9 | UseCase에서 다른 UseCase를 주입 | 계층 규칙 위반, 중첩 트랜잭션 위험 | 여러 도메인의 Application Service를 주입 |
+| 10 | Controller에서 Service나 Repository를 주입 | UseCase 계층을 건너뜀 | Controller는 UseCase만 주입 |
+| 11 | Domain Model에서 DTO 클래스를 참조 | 역방향 의존성 | `{Feature}Result.from(model)` 패턴 사용 |
+| 12 | Application Service나 Domain에서 `.toKst()` 호출 | 표시 관심사가 비즈니스 계층에 유출 | KST 변환은 Response DTO에서만 수행 |
