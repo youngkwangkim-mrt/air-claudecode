@@ -6,12 +6,14 @@
 
 ## Requirements
 
-| Tool                                                          | Required            | Description                                                                           |
-|---------------------------------------------------------------|---------------------|---------------------------------------------------------------------------------------|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Yes                 | Anthropic's official CLI for Claude                                                   |
-| [GitHub CLI (gh)](https://cli.github.com/)                    | Yes                 | GitHub command-line tool ([Installation Guide](docs/gh-installation-guide.md))        |
-| [MCP Atlassian](https://github.com/sooperset/mcp-atlassian)   | For Jira/Confluence | Atlassian MCP server ([Installation Guide](docs/mcp-atlassian-installation-guide.md)) |
-| [gogcli](https://github.com/steipete/gogcli)                 | For Google Calendar  | Google Workspace CLI ([Installation Guide](docs/gogcli-installation-guide.md))        |
+| Tool                                                          | Required            | Description                                                                                         |
+|---------------------------------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Yes                 | Anthropic's official CLI for Claude                                                                 |
+| [GitHub CLI (gh)](https://cli.github.com/)                    | Yes                 | GitHub command-line tool ([Installation Guide](docs/install-guide/gh-installation-guide.md))        |
+| [git-flow-next](https://github.com/gittower/git-flow-next)   | For Git Flow        | Modern Git Flow CLI ([Installation Guide](docs/install-guide/git-flow-installation-guide.md))       |
+| [MCP Atlassian](https://github.com/sooperset/mcp-atlassian)  | For Jira/Confluence | Atlassian MCP server ([Installation Guide](docs/install-guide/mcp-atlassian-installation-guide.md)) |
+| [Slack MCP](https://github.com/modelcontextprotocol/servers)  | For Slack           | Slack MCP server ([Installation Guide](docs/install-guide/slack-mcp-installation-guide.md))         |
+| [gogcli](https://github.com/steipete/gogcli)                 | For Google Calendar | Google Workspace CLI ([Installation Guide](docs/install-guide/gogcli-installation-guide.md))        |
 
 ---
 
@@ -34,10 +36,10 @@ In Claude Code, run:
 ### 3. Verify installation
 
 ```
-/air-claudecode:setup
+/air-claudecode:setup-air-cc
 ```
 
-This checks all prerequisites (Claude Code, gh CLI, Atlassian MCP, gogcli) and reports any missing dependencies.
+This checks all prerequisites, offers to install missing tools, sets up the CLAUDE.md block, and reports status.
 
 ### 4. Start using
 
@@ -74,10 +76,11 @@ Team-specific development conventions in [`conventions/project-conventions/`](co
 
 ## Docs
 
-- [GitHub CLI Installation Guide](docs/gh-installation-guide.md)
-- [MCP Atlassian Installation Guide](docs/mcp-atlassian-installation-guide.md)
-- [gogcli Installation Guide](docs/gogcli-installation-guide.md)
-- [Git Flow Setup Guide](docs/git-flow-setup.md)
+- [GitHub CLI Installation Guide](docs/install-guide/gh-installation-guide.md)
+- [git-flow-next Installation Guide](docs/install-guide/git-flow-installation-guide.md)
+- [MCP Atlassian Installation Guide](docs/install-guide/mcp-atlassian-installation-guide.md)
+- [Slack MCP Installation Guide](docs/install-guide/slack-mcp-installation-guide.md)
+- [gogcli Installation Guide](docs/install-guide/gogcli-installation-guide.md)
 
 ---
 
