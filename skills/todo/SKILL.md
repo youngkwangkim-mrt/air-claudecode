@@ -38,14 +38,19 @@ Manage weekly todos in markdown files. Tasks are organized by ISO week (Sunday s
    - Create `templates/weekly.md` from the template in `references/format-guide.md` (Weekly Template section)
    - Create `backlog.md` with initial structure: `# Backlog\n\n## P1\n\n## P2\n\n## Ideas\n`
    - Create `topics.md` with initial structure: `# Topics\n\n> Active projects and areas of work. Tasks use %topic-name to link here.\n\n## Active\n\n## Archived\n`
-   - Write `todo-workspace` path inside the `<\!--air-claudecode:start-->` / `<\!--air-claudecode:end-->` block in `~/.claude/CLAUDE.md`:
+   - Write `todo-workspace` path and trigger directive inside the `<\!--air-claudecode:start-->` / `<\!--air-claudecode:end-->` block in `~/.claude/CLAUDE.md`:
      - Find the `<\!--air-claudecode:end-->` marker
-     - Insert `todo-workspace: {path}` on a new line just before `<\!--air-claudecode:end-->`
+     - Insert the following lines just before `<\!--air-claudecode:end-->`:
+       ```
+       todo-workspace: {path}
+       todo-trigger: When user mentions "todo", "투두", "할일", or "tasks", invoke /air-claudecode:todo skill.
+       ```
      - If the air-claudecode block doesn't exist, append the full block:
        ```
        <\!--air-claudecode:start-->
        <\!-- air-claudecode — auto-generated, do not edit manually -->
        todo-workspace: {path}
+       todo-trigger: When user mentions "todo", "투두", "할일", or "tasks", invoke /air-claudecode:todo skill.
        <\!--air-claudecode:end-->
        ```
    - **Never write outside the air-claudecode markers**
