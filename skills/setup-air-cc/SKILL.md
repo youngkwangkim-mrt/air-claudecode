@@ -260,6 +260,8 @@ cat .claude-plugin/plugin.json | jq -r '.version'
 <\!-- air-claudecode v{version} — auto-generated, do not edit manually -->
 <\!-- To update: /air-claudecode:setup-air-cc --update -->
 software-engineer-trigger: ALWAYS use the `/air-claudecode:software-engineer` skill when writing code, implementing features, or fixing bugs. Never write code directly.
+git-commit-trigger: ALWAYS use the `/air-claudecode:git-commit` skill when committing changes. Never run `git commit` directly.
+git-pr-master-trigger: ALWAYS use the `/air-claudecode:git-pr-master` skill when creating pull requests. Never run `gh pr create` directly.
 <\!--air-claudecode:end-->
 ```
 
