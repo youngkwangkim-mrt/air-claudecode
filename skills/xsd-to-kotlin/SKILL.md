@@ -209,7 +209,7 @@ Fix any compilation errors before finishing.
 | Missing namespace on root | Root class needs namespace for SOAP envelope parsing | Add `namespace` parameter to `@JsonRootName` |
 | Non-nullable optional field | XSD `minOccurs="0"` mapped as non-nullable | Always use `?` for optional fields |
 | Version suffix in class name | XSD type names include internal version IDs like `_80157S` | Strip the `_?\d{3,}[A-Z]?$` suffix (end-anchored); resolve collisions with parent class prefix |
-| Trailing `I` in class name | XSD type variant marker `I` left in class name (e.g., `StatusDetailsTypeI`) | Strip trailing `I` after version suffix removal |
+| Trailing `I` in class name | XSD type variant marker `I` left in class name (e.g., `StatusDetailsTypeI`) | Strip trailing `I` **only when original name matches** `I_?\d{3,}[A-Z]?$` |
 | Plural class name | Class named `NumberOfUnitsType` instead of `NumberOfUnitType` | Use singular form for all class names |
 | Singular List field name | List field uses singular name (e.g., `passenger: List<T>`) | Use plural form for List fields (`passengers: List<T>`) |
 | Plural non-List field name | Non-List field uses plural name (e.g., `errorDetails: T`) | Use singular form for non-List fields (`errorDetail: T`) |
@@ -226,7 +226,7 @@ Fix any compilation errors before finishing.
 - [ ] All classes are top-level in a single file (no inner/nested classes)
 - [ ] No type reuse from other packages — all types defined locally
 - [ ] XSD internal version suffixes stripped from all class names (no `_80157S`, `48648C`, etc.)
-- [ ] Trailing `I` suffix stripped from class names (e.g., `StatusDetailsTypeI` → `StatusDetailsType`)
+- [ ] Trailing `I` suffix stripped **conditionally** (only when original XSD type ends with `I_?\d{3,}[A-Z]?$`)
 - [ ] Class names use singular form (e.g., `NumberOfUnitsType` → `NumberOfUnitType`)
 - [ ] Name collisions after suffix stripping resolved with parent class prefix
 - [ ] File placed in correct package (`client/request/` or `client/response/`)
