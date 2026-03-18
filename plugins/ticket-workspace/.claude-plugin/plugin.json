@@ -1,0 +1,16 @@
+{
+  "name": "ticket-workspace",
+  "version": "0.1.0",
+  "description": "Jira ticket workspace manager -- per-ticket folders with work logs, status tracking, git repo cloning, and Jira workflow control.",
+  "author": {
+    "name": "YoungKwang Kim"
+  },
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "jira",
+    "workspace",
+    "ticket"
+  ],
+  "skills": "./skills/"
+}

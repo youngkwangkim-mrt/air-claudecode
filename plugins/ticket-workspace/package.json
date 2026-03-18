@@ -1,0 +1,24 @@
+{
+  "name": "ticket-workspace",
+  "version": "0.1.0",
+  "description": "Jira ticket workspace manager for Claude Code",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "jira",
+    "workspace",
+    "ticket"
+  ],
+  "files": [
+    ".claude-plugin",
+    "skills",
+    "agents",
+    "hooks",
+    "scripts",
+    "CLAUDE.md",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
