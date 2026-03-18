@@ -1,0 +1,17 @@
+{
+  "name": "todo-workspace",
+  "version": "0.1.0",
+  "description": "Advanced todo management with Jira integration, recurring tasks, Slack digest, progress streaks, and memos.",
+  "author": {
+    "name": "YoungKwang Kim"
+  },
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "todo",
+    "jira",
+    "slack",
+    "productivity"
+  ],
+  "skills": "./skills/"
+}

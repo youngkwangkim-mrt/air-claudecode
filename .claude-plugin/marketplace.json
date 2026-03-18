@@ -57,6 +57,23 @@
         "ticket",
         "workflow"
       ]
+    },
+    {
+      "name": "todo-workspace",
+      "description": "Advanced todo management with Jira integration, recurring tasks, Slack digest, progress streaks, and memos",
+      "version": "0.1.0",
+      "author": {
+        "name": "YoungKwang Kim"
+      },
+      "source": "./plugins/todo-workspace",
+      "category": "productivity",
+      "tags": [
+        "todo",
+        "jira",
+        "slack",
+        "recurring",
+        "productivity"
+      ]
     }
   ]
 }
